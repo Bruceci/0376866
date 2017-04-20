@@ -1,0 +1,53 @@
+diff --git a/plugins/task_handlers/panel_context.inc b/plugins/task_handlers/panel_context.inc
+index 9f03b55..08f39a9 100644
+--- a/plugins/task_handlers/panel_context.inc
++++ b/plugins/task_handlers/panel_context.inc
+@@ -762,6 +762,22 @@ function panels_panel_context_edit_settings($form, &$form_state) {
+     '#title' => t('Administrative title'),
+     '#description' => t('Administrative title of this variant.'),
+   );
++  $name = isset($conf['name']) ? $conf['name'] : FALSE;
++  $form['conf']['name'] = array(
++    '#type' => 'machine_name',
++    '#title' => t('Machine name'),
++    '#required' => FALSE,
++    '#default_value' => $name,
++    '#description' => t("A unique machine-readable name for this variant. It must only contain lowercase letters, numbers, and underscores. This name will be used when exporting the variant. If left empty the variant's name will be used instead."),
++    '#size' => 32,
++    '#maxlength' => 32,
++    '#machine_name' => array(
++      'exists' => 'page_manager_handler_check_machine_name',
++      'source' => array('conf', 'title'),
++    ),
++    '#field_prefix' => '<span dir="ltr">' . $form_state['task_name'] . '__',
++    '#field_suffix' => '</span>&lrm;',
++  );
+ 
+   $form['conf']['no_blocks'] = array(
+     '#type' => 'checkbox',
+@@ -840,6 +856,17 @@ function panels_panel_context_edit_settings($form, &$form_state) {
+  * Submit handler for general settings form.
+  */
+ function panels_panel_context_edit_settings_submit(&$form, &$form_state) {
++  $machine_name = $form_state['handler']->name;
++  $name = $form_state['task_id'] . '__' . $form_state['values']['name'];
++
++  // If new name doesn't equal machine name, we need to update and redirect.
++  if ($machine_name !== $name) {
++    $form_state['new trail'] = $form_state['trail'];
++    $delta = array_search($machine_name, $form_state['new trail']);
++    $form_state['new trail'][$delta] = $name;
++    $form_state['handler']->name = $name;
++  }
++
+   $form_state['handler']->conf['no_blocks'] = $form_state['values']['no_blocks'];
+   $form_state['handler']->conf['body_classes_to_remove'] = $form_state['values']['body_classes_to_remove'];
+   $form_state['handler']->conf['body_classes_to_add'] = $form_state['values']['body_classes_to_add'];
+@@ -847,6 +874,7 @@ function panels_panel_context_edit_settings_submit(&$form, &$form_state) {
+   $form_state['handler']->conf['css_id'] = $form_state['values']['css_id'];
+   $form_state['handler']->conf['css'] = $form_state['values']['css'];
+   $form_state['handler']->conf['title'] = $form_state['values']['title'];
++  $form_state['handler']->conf['name'] = $form_state['values']['name'];
+ 
+   // Unset the old checkbox so we don't store needless data.
+   if (isset($form_state['handler']->conf['use_ipe'])) {

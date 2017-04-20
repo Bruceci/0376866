@@ -1,0 +1,5 @@
+name = Tube Tweak
+description = Tube Tweak.
+files[] = tube_tweak.module
+core = 7.x
+package = Custom
