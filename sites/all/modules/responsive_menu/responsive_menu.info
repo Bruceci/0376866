@@ -6,9 +6,9 @@ package = Other
 dependencies[] = libraries
 dependencies[] = jquery_update
 
-; Information added by Drupal.org packaging script on 2016-04-04
-version = "7.x-2.5"
+; Information added by Drupal.org packaging script on 2016-12-10
+version = "7.x-2.6"
 core = "7.x"
 project = "responsive_menu"
-datestamp = "1459767844"
+datestamp = "1481361487"
 

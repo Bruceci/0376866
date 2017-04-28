@@ -18,6 +18,14 @@ You can set the various options. Some of the options will require the libraries 
 
 Set your jQuery version to at least 1.7 at /admin/config/development/jquery_update
 
+## Theming and theme compatibility
+
+This module should be compatible with most themes. One basic requirement is that the theme includes a wrapping 'page' div. This is so that mmenu knows which elements belong inside the wrapper when the off canvas menu is opened. Bartik is an example of a theme with a wrapping div. Bootstrap (3) is an example of a theme which doesn't have the wrapping
+div (although you can easily add one to page.tpl.php, see [this issue](https://www.drupal.org/node/2727345)). More details on how to set up the divs are on an [mmenu documentation
+page](http://mmenu.frebsite.nl/tutorials/off-canvas/the-page.html).
+
+It should also be noted that the default css that comes with the module provides some _very basic_ styling and should be copied and pasted into your theme's css so that you can modify it to fit your theme's style. Once you've copied and pasted the css into your stylesheet you can disable the inclusion of the module's css on the settings page.
+
 ## Licenses
 
 The licenses for the libraries used by this module are:

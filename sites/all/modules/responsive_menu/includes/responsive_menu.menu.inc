@@ -8,13 +8,7 @@
 /**
  * Build a menu tree based.
  */
-function responsive_menu_tree_build($menu_name) {
-  // Get the maximum depth the horizontal menu will display.
-  $depth = variable_get('responsive_menu_depth', 3);
-
-  // Get the raw menu tree data.
-  $tree = responsive_menu_tree_block_data($menu_name, $depth);
-
+function responsive_menu_tree_build($tree, $menu_name) {
   $data = array();
   $data['subject'] = '';
   $data['content']['#content'] = responsive_menu_tree_output($tree, $menu_name);

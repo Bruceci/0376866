@@ -92,7 +92,17 @@ function responsive_menu_block_view($delta = '') {
       );
     case 'horizontal_menu':
       module_load_include('inc', 'responsive_menu', 'includes/responsive_menu.menu');
-      return responsive_menu_tree_build(variable_get('responsive_menu_menu', 'main-menu'));
+      // Get the menu name of the menu to be rendered.
+      $menu_name = variable_get('responsive_menu_menu', 'main-menu');
+      // Allow the menu name to be altered.
+      drupal_alter('responsive_menu_horizontal_menu_name', $tree);
+      // Get the maximum depth the horizontal menu will display.
+      $depth = variable_get('responsive_menu_depth', 3);
+      // Get the raw menu tree data.
+      $tree = responsive_menu_tree_block_data($menu_name, $depth);
+      // Allow the tree to be altered.
+      drupal_alter('responsive_menu_horizontal_tree', $tree);
+      return responsive_menu_tree_build($tree, $menu_name);
   }
 
   return $block;
@@ -241,39 +251,6 @@ function responsive_menu_libraries_info() {
         'dist/jquery.mmenu.all.css',
       ),
     ),
-  /*
-    'versions' => array(
-      '5.6' => array(
-        'files' => array(
-          'js' => array(
-            'dist/js/jquery.mmenu.all.min.js',
-          ),
-          'css' => array(
-            'dist/css/jquery.mmenu.all.css',
-          ),
-        ),
-      ),
-      '5.4' => array(
-        'files' => array(
-          'js' => array(
-            'dist/core/js/jquery.mmenu.min.all.js',
-          ),
-          'css' => array(
-            'dist/css/jquery.mmenu.all.css',
-          ),
-        ),
-      ),
-      '5.0' => array(
-        'files' => array(
-          'js' => array(
-            'dist/core/js/jquery.mmenu.min.all.js',
-          ),
-          'css' => array(
-            'dist/css/jquery.mmenu.all.css',
-          ),
-        ),
-      ),
-    ),*/
   );
   $libraries['hammerjs'] = array(
     'name' => 'hammerjs',
@@ -303,14 +280,21 @@ function responsive_menu_page_build(&$page) {
 
   module_load_include('inc', 'responsive_menu', 'includes/responsive_menu.menu');
 
-  $menus_variable = variable_get('responsive_menu_off_canvas_menus', 'main-menu');
-  $menus = explode(',', $menus_variable);
+  $off_canvas_menus = variable_get('responsive_menu_off_canvas_menus', 'main-menu');
+
+  // Allow other modules to modify this configuration.
+  drupal_alter('responsive_menu_off_canvas_menu_names', $off_canvas_menus);
+
+  $menus = explode(',', $off_canvas_menus);
 
   $menu_tree = array();
   foreach ($menus as $menu_name) {
     $tree = responsive_menu_tree_block_data(trim($menu_name));
     $menu_tree = array_merge($menu_tree, $tree);
   }
+
+  // Allow this merged menu tree to be altered.
+  drupal_alter('responsive_menu_off_canvas_tree', $menu_tree);
 
   if (function_exists('libraries_load')) {
     // Load the superfish library.
@@ -328,7 +312,7 @@ function responsive_menu_page_build(&$page) {
     if (variable_get('responsive_menu_hammer', FALSE)) {
       libraries_load('hammerjs');
     }
-    $page['content']['#attached']['js'][] = array(
+    $page['page_bottom']['#attached']['js'][] = array(
       'data' => drupal_get_path('module', 'responsive_menu') . '/js/responsive_menu.config.js',
       'type' => 'file',
       'scope' => 'footer',
@@ -337,7 +321,10 @@ function responsive_menu_page_build(&$page) {
     );
   }
 
+  // Choose the first menu as the menu name.
+  $menu_name = reset($menus);
   $output = responsive_menu_tree_output($menu_tree, $menu_name);
+
   $output['#id'] = 'off-canvas-menu';
   $page['page_bottom']['off_canvas'] = array(
     '#prefix' => '<div class="off-canvas-wrapper"><div id="off-canvas">',

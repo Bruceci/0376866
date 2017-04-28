@@ -70,6 +70,7 @@ html.mm-opened .mm-page {
 }
 
 .horizontal-menu li li {
+  position: relative;
   float: left;
   width: 100%;
 }

@@ -150,3 +150,44 @@ function zen866_menu_link__main_menu(array $variables) {
   $mlid = $variables['element']['#original_link']['mlid'];
   return '<li' . drupal_attributes($element['#attributes']) . '><span class="menu-link-icon menu-link-icon-' . $mlid . '"></span>'. $output . $sub_menu . "</li>\n";
 }
+function zen866_file_entity_file_video($variables) {
+  $files = $variables['files'];
+  $output = '';
+  $video_attributes = array();
+  if ($variables['controls']) {
+    $video_attributes['controls'] = 'controls';
+  }
+  if ($variables['autoplay']) {
+    $video_attributes['autoplay'] = 'autoplay';
+  }
+  if ($variables['loop']) {
+    $video_attributes['loop'] = 'loop';
+  }
+  if ($variables['muted']) {
+    $video_attributes['muted'] = 'muted';
+  }
+  if ($variables['width']) {
+    $video_attributes['width'] = $variables['width'];
+  }
+  if ($variables['height']) {
+    $video_attributes['height'] = $variables['height'];
+  }
+  if (!empty($variables['preload'])) {
+    $video_attributes['preload'] = $variables['preload'];
+  }
+    $video_attributes['webkit-playsinline']= $variables['playsinline'];
+    $video_attributes['playsinline']= $variables['playsinline'];
+    $video_attributes['poster'] = $variables['poster'];
+
+  $output .= '<video' . drupal_attributes($video_attributes) . '>';
+  foreach ($files as $delta => $file) {
+    $source_attributes = array(
+      'src' => file_create_url($file['uri']),
+      'type' => $file['filemime'],
+    );
+    $output .= '<source' . drupal_attributes($source_attributes) . ' />';
+  }
+  $output .= '</video>';
+  return $output;
+}
+

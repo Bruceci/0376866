@@ -48,10 +48,9 @@ function template_preprocess_responsive_menu_tree(&$variables) {
  */
 function theme_responsive_menu_tree($variables) {
   $plid = $variables['plid'];
-  $parent_title = $variables['parent_title'];
 
   if ($variables['depth'] > 1) {
-    $content = '<ul id="menu-tree-mlid-' . $plid . '" class="sub-nav">';
+    $content = '<ul class="sub-nav menu-tree-mlid-' . $plid . '">';
     $content .= $variables['tree']['#children'] . '</ul>';
     return $content;
   }

@@ -1,0 +1,30 @@
+<?php
+/* implements hook_field_formatter_info_alter().*/
+function tube_tweak_field_formatter_info_alter(&$info) {
+
+  $info['file_video']['settings']['playsinline'] = TRUE;
+  
+}
+
+function tube_tweak_field_formatter_settings_form_alter(array &$settings_form, array $context) {
+  
+   if($context['formatter']['label'] == 'Video'){
+      $settings_form['playsinline'] = array(
+        '#title' => t('playsinline'),
+        '#type' => 'checkbox',
+        '#default_value' => TRUE,
+      );
+    }
+}
+function tube_tweak_field_attach_view_alter(&$output, $context){
+  if(isset($output['field_video'])){
+     $output['field_video'][0]['#playsinline'] = TRUE;
+     $poster_uri = $output['field_video']['#items'][0]['field_video_poster']['und'][0]['uri'];
+     $output['field_video'][0]['#poster'] = file_create_url($poster_uri);
+   }
+}
+
+function tube_tweak_theme_registry_alter(&$theme_registry){
+  $theme_registry['file_entity_file_video']['variables']['playsinline'] = TRUE;
+  $theme_registry['file_entity_file_video']['variables']['poster'] = '';
+}
